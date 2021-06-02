@@ -4,6 +4,7 @@ import win32api, win32con, win32gui
 import cv2
 import math
 import time
+import mss
 
 CONFIG_FILE = './yolov3.cfg'
 WEIGHT_FILE = './yolov3.weights'
@@ -19,12 +20,14 @@ ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 # Get rect of Window
 hwnd = win32gui.FindWindow(None, 'Counter-Strike: Global Offensive')
 rect = win32gui.GetWindowRect(hwnd)
-region = rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1]
+region = {"top": rect[1], "left": rect[0], "width": rect[2] - rect[0], "height": rect[3] - rect[1]}
+sct = mss.mss()
 
 size_scale = 2
 while True:
     # Get image of screen
-    frame = np.array(pyautogui.screenshot(region=region))
+    # frame = np.array(pyautogui.screenshot(region=region))
+    frame = cv2.cvtColor(np.array(sct.grab(region)), cv2.COLOR_BGRA2RGB)  # faster screenshot
     frame_height, frame_width = frame.shape[:2]
 
     # Detection
